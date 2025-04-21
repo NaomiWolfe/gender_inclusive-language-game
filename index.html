@@ -1,0 +1,857 @@
+<!DOCTYPE html><html lang="en"><head><meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://code.jquery.com https://unpkg.com https://d3js.org https://threejs.org https://cdn.plot.ly https://stackpath.bootstrapcdn.com https://maps.googleapis.com https://cdn.tailwindcss.com https://ajax.googleapis.com https://kit.fontawesome.com https://cdn.datatables.net https://maxcdn.bootstrapcdn.com https://code.highcharts.com https://tako-static-assets-production.s3.amazonaws.com https://www.youtube.com https://fonts.googleapis.com https://fonts.gstatic.com https://pfst.cf2.poecdn.net https://puc.poecdn.net https://i.imgur.com https://wikimedia.org https://*.icons8.com https://*.giphy.com https://picsum.photos https://images.unsplash.com; frame-src 'self' https://www.youtube.com https://trytako.com; child-src 'self'; manifest-src 'self'; worker-src 'self'; upgrade-insecure-requests; block-all-mixed-content;">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inclusive Vibes Check</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&amp;display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root {
+            --card-width: min(450px, 90vw);
+            --card-height: min(280px, 56vw);
+            --inclusive-color: #4CAF50;
+            --non-inclusive-color: #FF5252;
+            --neutral-color: #5D5CDE;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f8f9fa;
+            overflow-x: hidden;
+        }
+
+        .dark body {
+            background-color: #121212;
+            color: #f8f9fa;
+        }
+
+        .card {
+            width: var(--card-width);
+            height: var(--card-height);
+            perspective: 1000px;
+            margin: 0 auto;
+        }
+
+        .card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+
+        .card.flipped .card-inner {
+            transform: rotateY(180deg);
+        }
+
+        .card-front, .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 16px;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-front {
+            background-color: white;
+            color: #333;
+        }
+
+        .dark .card-front {
+            background-color: #2d2d2d;
+            color: #f0f0f0;
+        }
+
+        .card-back {
+            background-color: #f0f0f0;
+            color: #333;
+            transform: rotateY(180deg);
+        }
+
+        .dark .card-back {
+            background-color: #1d1d1d;
+            color: #f0f0f0;
+        }
+
+        .card-content {
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            font-size: 1.25rem;
+            padding: 10px;
+        }
+
+        .game-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 30px;
+        }
+
+        .game-button {
+            flex: 1;
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: 600;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            user-select: none;
+        }
+
+        .game-button:active {
+            transform: translateY(2px);
+        }
+
+        .inclusive-button {
+            background-color: var(--inclusive-color);
+            color: white;
+        }
+
+        .inclusive-button:hover {
+            background-color: #43A047;
+        }
+
+        .non-inclusive-button {
+            background-color: var(--non-inclusive-color);
+            color: white;
+        }
+
+        .non-inclusive-button:hover {
+            background-color: #E53935;
+        }
+
+        .feedback {
+            font-weight: 600;
+            text-align: center;
+            margin-bottom: 15px;
+            min-height: 24px;
+        }
+
+        .inclusive {
+            color: var(--inclusive-color);
+        }
+
+        .non-inclusive {
+            color: var(--non-inclusive-color);
+        }
+
+        .explanation {
+            font-size: 0.95rem;
+            line-height: 1.4;
+            margin-bottom: 15px;
+        }
+
+        .tags {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 10px;
+        }
+
+        .tag {
+            background-color: #e9ecef;
+            color: #495057;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+        }
+
+        .dark .tag {
+            background-color: #3d3d3d;
+            color: #d0d0d0;
+        }
+
+        .next-button {
+            background-color: var(--neutral-color);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            margin: 0 auto;
+            display: block;
+            transition: all 0.2s;
+        }
+
+        .next-button:hover {
+            background-color: #4949B3;
+        }
+
+        .next-button:active {
+            transform: translateY(2px);
+        }
+
+        .score-display {
+            text-align: center;
+            margin-top: 20px;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .progress-container {
+            width: var(--card-width);
+            height: 8px;
+            background-color: #e9ecef;
+            border-radius: 4px;
+            margin: 15px auto;
+            overflow: hidden;
+        }
+
+        .dark .progress-container {
+            background-color: #3d3d3d;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background-color: var(--neutral-color);
+            transition: width 0.3s ease;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+
+        .shake {
+            animation: shake 0.5s;
+        }
+
+        .emoji-reaction {
+            position: absolute;
+            top: -60px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 40px;
+            opacity: 0;
+            pointer-events: none;
+            transition: top 0.5s, opacity 0.5s;
+        }
+
+        .emoji-reaction.show {
+            top: -80px;
+            opacity: 1;
+        }
+
+        .card-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 16px;
+            opacity: 0.05;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: #5D5CDE;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        @keyframes streak-animation {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        .streak-animation {
+            animation: streak-animation 0.5s;
+        }
+
+        .streak-count {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #5D5CDE;
+            color: white;
+            border-radius: 50%;
+            width: 28px;
+            height: 28px;
+            font-size: 0.9rem;
+            margin-left: 8px;
+        }
+
+        .dark .streak-count {
+            background-color: #7675E5;
+        }
+
+        .vibe-meter {
+            font-size: 0.9rem;
+            text-align: center;
+            margin-top: 5px;
+            color: #6c757d;
+        }
+
+        .dark .vibe-meter {
+            color: #adb5bd;
+        }
+
+        /* Swipe indicator */
+        .swipe-indicator {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 24px;
+            color: rgba(0,0,0,0.2);
+            animation: pulse 1.5s infinite;
+            pointer-events: none;
+        }
+
+        .dark .swipe-indicator {
+            color: rgba(255,255,255,0.2);
+        }
+
+        .swipe-left {
+            left: -40px;
+        }
+
+        .swipe-right {
+            right: -40px;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.2; }
+            50% { opacity: 0.8; }
+        }
+
+        .card-container {
+            position: relative;
+            margin: 0 auto;
+            width: var(--card-width);
+        }
+    </style>
+</head>
+<body>
+    <div class="min-h-screen p-4 flex flex-col items-center pt-6 pb-12">
+        <h1 class="text-2xl font-bold mb-2 text-center">Inclusive Vibes Check</h1>
+        <p class="text-center mb-6 max-w-md text-gray-600 dark:text-gray-300">Swipe right for inclusive, left for non-inclusive, or use the buttons below!</p>
+        
+        <div class="progress-container">
+            <div class="progress-bar" id="progressBar" style="width: 0%"></div>
+        </div>
+        
+        <div class="score-display">
+            Score: <span id="score">0</span> / <span id="total">0</span>
+            <span id="streakContainer" class="hidden">
+                <span id="streakIndicator" class="streak-count">0</span>
+            </span>
+        </div>
+        
+        <div class="vibe-meter">Vibe Check: <span id="vibeMeter">Just getting started</span></div>
+        
+        <div class="card-container mt-6">
+            <div class="card" id="card">
+                <div class="emoji-reaction" id="emojiReaction">🔥</div>
+                <div class="swipe-indicator swipe-left">👈</div>
+                <div class="swipe-indicator swipe-right">👉</div>
+                <div class="card-inner">
+                    <div class="card-front">
+                        <div class="card-background"></div>
+                        <div class="tags" id="frontTags"></div>
+                        <div class="card-content" id="cardContent">Loading...</div>
+                        <div class="tags">
+                            <div class="tag">Swipe to answer</div>
+                        </div>
+                    </div>
+                    <div class="card-back">
+                        <div class="feedback" id="feedback"></div>
+                        <div class="explanation" id="explanation"></div>
+                        <div class="tags" id="backTags"></div>
+                        <button class="next-button" id="nextButton">Next Card</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="game-buttons">
+            <div class="game-button non-inclusive-button" id="nonInclusiveButton">Not Inclusive</div>
+            <div class="game-button inclusive-button" id="inclusiveButton">Inclusive</div>
+        </div>
+
+        <div class="mt-8 text-center text-sm text-gray-500 dark:text-gray-400">
+            <p>Learn more about using inclusive language in your daily life.</p>
+        </div>
+    </div>
+
+    <script>
+        // Check and set dark mode
+        function setupDarkMode() {
+            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                document.documentElement.classList.add('dark');
+            }
+            
+            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
+                if (event.matches) {
+                    document.documentElement.classList.add('dark');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                }
+            });
+        }
+
+        // Card data
+        const cards = [
+            {
+                text: "Hey guys, let's go grab some lunch!",
+                inclusive: false,
+                explanation: "'Guys' is often used to address mixed gender groups, but it's not gender-inclusive. Consider alternatives like 'everyone,' 'folks,' 'y'all,' or 'team.'",
+                tags: ["Casual Speech", "Common Phrase"]
+            },
+            {
+                text: "Each student should submit their assignment by Friday.",
+                inclusive: true,
+                explanation: "This uses the singular 'they/their' which is gender-neutral and inclusive of all gender identities.",
+                tags: ["Pronouns", "Academic"]
+            },
+            {
+                text: "The doctors and their wives are invited to the gala.",
+                inclusive: false,
+                explanation: "This assumes all doctors are men with female partners. More inclusive phrasing would be 'The doctors and their partners/spouses are invited to the gala.'",
+                tags: ["Assumptions", "Heteronormative"]
+            },
+            {
+                text: "Yo, everyone in the squad is coming to the party tonight!",
+                inclusive: true,
+                explanation: "'Everyone' is gender-neutral and inclusive of all identities. This sentence avoids gendered language altogether.",
+                tags: ["Gen Z Slang", "Social"]
+            },
+            {
+                text: "Look at how she's dressed. She's asking for trouble!",
+                inclusive: false,
+                explanation: "This statement perpetuates harmful gender stereotypes and victim-blaming. Clothing choices never justify harassment or harm.",
+                tags: ["Harmful", "Stereotyping"]
+            },
+            {
+                text: "All firefighters must check their equipment before leaving the station.",
+                inclusive: true,
+                explanation: "Using 'firefighters' instead of 'firemen' and the neutral 'their' makes this inclusive of all genders in this profession.",
+                tags: ["Workplace", "Job Titles"]
+            },
+            {
+                text: "That's so girlish - why are you acting like that?",
+                inclusive: false,
+                explanation: "This uses 'girlish' as a negative descriptor, reinforcing harmful gender stereotypes that certain behaviors are inappropriate based on gender.",
+                tags: ["Stereotyping", "Criticism"]
+            },
+            {
+                text: "The server will bring your order when it's ready.",
+                inclusive: true,
+                explanation: "'Server' is a gender-neutral job title that doesn't assume gender, unlike 'waiter' or 'waitress'.",
+                tags: ["Job Titles", "Service Industry"]
+            },
+            {
+                text: "Ngl, that fit is fire! Slaying the gender norms!",
+                inclusive: true,
+                explanation: "This compliment appreciates style without imposing gender expectations and explicitly celebrates breaking free from gender norms.",
+                tags: ["Gen Z Slang", "Compliment"]
+            },
+            {
+                text: "Man up and deal with it! Don't be such a sissy.",
+                inclusive: false,
+                explanation: "This reinforces toxic masculine stereotypes by suggesting emotional responses are feminine and therefore negative. It's harmful to all genders.",
+                tags: ["Toxic Phrases", "Emotional Expression"]
+            },
+            {
+                text: "The flight attendant asked passengers to fasten their seatbelts.",
+                inclusive: true,
+                explanation: "'Flight attendant' is a gender-neutral term (unlike 'stewardess') and uses the neutral 'their' for passengers.",
+                tags: ["Job Titles", "Travel"]
+            },
+            {
+                text: "Bestie, your vibe is immaculate today! Main character energy!",
+                inclusive: true,
+                explanation: "This compliment uses gender-neutral language and focuses on the person's essence and energy rather than gendered attributes.",
+                tags: ["Internet Slang", "Compliment"]
+            },
+            {
+                text: "That's weird for a girl, you're not like other girls.",
+                inclusive: false,
+                explanation: "This implies there's a 'normal' way for girls to behave and other expressions are unusual. It creates division rather than inclusivity.",
+                tags: ["Backhanded Compliment", "Stereotyping"]
+            },
+            {
+                text: "All police officers must complete their training before receiving their badge.",
+                inclusive: true,
+                explanation: "'Police officers' is gender-neutral, unlike 'policemen,' and uses the inclusive 'their' pronoun.",
+                tags: ["Workplace", "Public Service"]
+            },
+            {
+                text: "She/They is living their best life right now, no cap!",
+                inclusive: true,
+                explanation: "This respects the person's pronouns (she/they) and correctly uses 'their' to match their stated preferences.",
+                tags: ["Pronouns", "Gen Z Slang"]
+            },
+            {
+                text: "I need a right-hand man for this project. Someone strong!",
+                inclusive: false,
+                explanation: "This uses gendered language ('man') and associates strength with masculinity. Better options would be 'right-hand person' or simply 'assistant'.",
+                tags: ["Workplace", "Leadership"]
+            },
+            {
+                text: "They're woke AF and their drip is bussin', respectfully!",
+                inclusive: true,
+                explanation: "This uses gender-neutral language ('they/their') and compliments the person without making gender-based assumptions.",
+                tags: ["Gen Z Slang", "Compliment"]
+            },
+            {
+                text: "Who's bringing their boyfriend/girlfriend to the party?",
+                inclusive: false,
+                explanation: "This assumes binary relationships. More inclusive phrasing would be 'Who's bringing a partner/date/significant other to the party?'",
+                tags: ["Social", "Relationships"]
+            },
+            {
+                text: "The chair of the committee will make the final decision.",
+                inclusive: true,
+                explanation: "'Chair' is a gender-neutral alternative to 'chairman' or 'chairwoman' that doesn't assume gender.",
+                tags: ["Leadership", "Job Titles"]
+            },
+            {
+                text: "I told my parents that I needed new clothes, and they agreed.",
+                inclusive: true,
+                explanation: "Using 'parents' instead of 'mom and dad' is inclusive of diverse family structures and doesn't assume a traditional family model.",
+                tags: ["Family", "Relationships"]
+            },
+            {
+                text: "Ladies and gentlemen, welcome aboard flight 302 to Chicago.",
+                inclusive: false,
+                explanation: "This binary greeting excludes non-binary individuals. 'Welcome everyone' or 'Welcome passengers' would be more inclusive.",
+                tags: ["Greetings", "Public Announcement"]
+            },
+            {
+                text: "Oof, that person is high-key giving villain era vibes today!",
+                inclusive: true,
+                explanation: "Using 'person' and descriptive language without gender references makes this commentary inclusive of all gender identities.",
+                tags: ["Internet Slang", "Description"]
+            },
+            {
+                text: "Just be a man about it and stop complaining!",
+                inclusive: false,
+                explanation: "This reinforces harmful gender stereotypes that associate masculinity with stoicism and invalidates emotional expression.",
+                tags: ["Toxic Phrases", "Emotional Expression"]
+            },
+            {
+                text: "Every customer should receive a survey in their email.",
+                inclusive: true,
+                explanation: "Using the singular 'their' is gender-inclusive and doesn't assume the gender of customers.",
+                tags: ["Business", "Communications"]
+            }
+        ];
+
+        // Game state
+        let currentCardIndex = 0;
+        let score = 0;
+        let streak = 0;
+        let totalSeen = 0;
+        let answered = false;
+        let touchStartX = 0;
+        let touchEndX = 0;
+
+        // DOM elements
+        const card = document.getElementById('card');
+        const cardContent = document.getElementById('cardContent');
+        const feedback = document.getElementById('feedback');
+        const explanation = document.getElementById('explanation');
+        const scoreDisplay = document.getElementById('score');
+        const totalDisplay = document.getElementById('total');
+        const inclusiveButton = document.getElementById('inclusiveButton');
+        const nonInclusiveButton = document.getElementById('nonInclusiveButton');
+        const nextButton = document.getElementById('nextButton');
+        const progressBar = document.getElementById('progressBar');
+        const frontTags = document.getElementById('frontTags');
+        const backTags = document.getElementById('backTags');
+        const emojiReaction = document.getElementById('emojiReaction');
+        const streakContainer = document.getElementById('streakContainer');
+        const streakIndicator = document.getElementById('streakIndicator');
+        const vibeMeter = document.getElementById('vibeMeter');
+
+        // Reactions based on streak
+        const reactions = [
+            {streak: 3, emoji: "🔥", text: "On fire!"},
+            {streak: 5, emoji: "💯", text: "Killin' it!"},
+            {streak: 7, emoji: "⚡", text: "Electric vibes!"},
+            {streak: 10, emoji: "👑", text: "Crown behavior!"}
+        ];
+
+        // Vibe meter phrases
+        const vibes = [
+            {threshold: 0, text: "Just getting started"},
+            {threshold: 0.3, text: "Learning the vibes"},
+            {threshold: 0.5, text: "Halfway there!"},
+            {threshold: 0.7, text: "Vibe check passing"},
+            {threshold: 0.9, text: "Immaculate vibes!"},
+            {threshold: 1.0, text: "No notes! Perfect!"}
+        ];
+
+        // Initialize game
+        function init() {
+            setupDarkMode();
+            shuffleCards();
+            displayCard();
+
+            // Event listeners
+            inclusiveButton.addEventListener('click', () => checkAnswer(true));
+            nonInclusiveButton.addEventListener('click', () => checkAnswer(false));
+            nextButton.addEventListener('click', nextCard);
+
+            // Touch events for swiping
+            card.addEventListener('touchstart', handleTouchStart, false);
+            card.addEventListener('touchmove', handleTouchMove, false);
+            card.addEventListener('touchend', handleTouchEnd, false);
+
+            // Mouse events for dragging (desktop)
+            card.addEventListener('mousedown', handleMouseDown, false);
+            document.addEventListener('mousemove', handleMouseMove, false);
+            document.addEventListener('mouseup', handleMouseUp, false);
+        }
+
+        // Shuffle cards for randomized order
+        function shuffleCards() {
+            for (let i = cards.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [cards[i], cards[j]] = [cards[j], cards[i]];
+            }
+        }
+
+        // Display current card
+        function displayCard() {
+            if (currentCardIndex >= cards.length) {
+                // Game finished, restart
+                currentCardIndex = 0;
+                shuffleCards();
+            }
+
+            const currentCard = cards[currentCardIndex];
+            
+            // Reset card state
+            card.classList.remove('flipped');
+            answered = false;
+            
+            // Set card content
+            cardContent.textContent = currentCard.text;
+            explanation.textContent = currentCard.explanation;
+            
+            // Clear and add tags
+            frontTags.innerHTML = '';
+            backTags.innerHTML = '';
+            
+            // Add front tags
+            const randomTag = document.createElement('div');
+            randomTag.classList.add('tag');
+            randomTag.textContent = '🎮 Card ' + (totalSeen + 1);
+            frontTags.appendChild(randomTag);
+            
+            // Add back tags
+            currentCard.tags.forEach(tag => {
+                const tagElement = document.createElement('div');
+                tagElement.classList.add('tag');
+                tagElement.textContent = tag;
+                backTags.appendChild(tagElement);
+            });
+
+            // Update progress bar
+            updateProgress();
+        }
+
+        // Check user's answer
+        function checkAnswer(userAnswer) {
+            if (answered) return;
+            
+            const currentCard = cards[currentCardIndex];
+            const isCorrect = userAnswer === currentCard.inclusive;
+            
+            answered = true;
+            totalSeen++;
+            
+            // Update score and streak
+            if (isCorrect) {
+                score++;
+                streak++;
+                updateStreak();
+                showEmojiReaction(true);
+            } else {
+                streak = 0;
+                updateStreak();
+                showEmojiReaction(false);
+                card.classList.add('shake');
+                setTimeout(() => {
+                    card.classList.remove('shake');
+                }, 500);
+            }
+            
+            // Update display
+            scoreDisplay.textContent = score;
+            totalDisplay.textContent = totalSeen;
+            
+            // Show feedback
+            feedback.textContent = isCorrect ? "Correct! ✓" : "Not quite! ✗";
+            feedback.className = "feedback " + (isCorrect ? "inclusive" : "non-inclusive");
+            
+            // Flip card to show explanation
+            card.classList.add('flipped');
+            
+            // Update progress displays
+            updateProgress();
+            updateVibeMeter();
+        }
+
+        // Go to next card
+        function nextCard() {
+            currentCardIndex++;
+            displayCard();
+        }
+
+        // Update progress bar
+        function updateProgress() {
+            const progress = (totalSeen / cards.length) * 100;
+            progressBar.style.width = `${progress}%`;
+        }
+
+        // Update streak counter
+        function updateStreak() {
+            if (streak >= 3) {
+                streakContainer.classList.remove('hidden');
+                streakIndicator.textContent = streak;
+                streakIndicator.classList.add('streak-animation');
+                setTimeout(() => {
+                    streakIndicator.classList.remove('streak-animation');
+                }, 500);
+            } else {
+                streakContainer.classList.add('hidden');
+            }
+        }
+
+        // Show emoji reaction based on answer
+        function showEmojiReaction(correct) {
+            // Select emoji based on streak or correctness
+            let emoji = correct ? "✅" : "❌";
+            
+            if (correct && streak >= 3) {
+                const applicableReactions = reactions.filter(r => streak >= r.streak);
+                if (applicableReactions.length > 0) {
+                    // Get the highest applicable reaction
+                    const reaction = applicableReactions[applicableReactions.length - 1];
+                    emoji = reaction.emoji;
+                }
+            }
+            
+            emojiReaction.textContent = emoji;
+            emojiReaction.classList.add('show');
+            
+            setTimeout(() => {
+                emojiReaction.classList.remove('show');
+            }, 1000);
+        }
+
+        // Update vibe meter based on score
+        function updateVibeMeter() {
+            const ratio = totalSeen > 0 ? score / totalSeen : 0;
+            
+            for (let i = vibes.length - 1; i >= 0; i--) {
+                if (ratio >= vibes[i].threshold) {
+                    vibeMeter.textContent = vibes[i].text;
+                    break;
+                }
+            }
+        }
+
+        // Touch handling for swipe
+        function handleTouchStart(e) {
+            touchStartX = e.touches[0].clientX;
+        }
+
+        function handleTouchMove(e) {
+            if (!touchStartX || answered) return;
+            
+            const touchX = e.touches[0].clientX;
+            const diff = touchX - touchStartX;
+            
+            // Limit the drag
+            const maxDrag = 100;
+            const limitedDiff = Math.max(Math.min(diff, maxDrag), -maxDrag);
+            
+            // Apply the transform
+            card.querySelector('.card-inner').style.transform = `rotateY(${limitedDiff / 10}deg)`;
+        }
+
+        function handleTouchEnd(e) {
+            if (!touchStartX || answered) return;
+            
+            touchEndX = e.changedTouches[0].clientX;
+            const diff = touchEndX - touchStartX;
+            
+            // Reset the transform
+            card.querySelector('.card-inner').style.transform = '';
+            
+            // Check if the swipe was significant enough
+            if (Math.abs(diff) > 50) {
+                // Swipe right = inclusive, swipe left = non-inclusive
+                checkAnswer(diff > 0);
+            }
+            
+            touchStartX = 0;
+        }
+
+        // Mouse handling for drag (desktop)
+        let isDragging = false;
+        let dragStartX = 0;
+
+        function handleMouseDown(e) {
+            if (answered) return;
+            isDragging = true;
+            dragStartX = e.clientX;
+        }
+
+        function handleMouseMove(e) {
+            if (!isDragging || answered) return;
+            
+            const diff = e.clientX - dragStartX;
+            
+            // Limit the drag
+            const maxDrag = 100;
+            const limitedDiff = Math.max(Math.min(diff, maxDrag), -maxDrag);
+            
+            // Apply the transform
+            card.querySelector('.card-inner').style.transform = `rotateY(${limitedDiff / 10}deg)`;
+        }
+
+        function handleMouseUp(e) {
+            if (!isDragging || answered) {
+                isDragging = false;
+                return;
+            }
+            
+            const diff = e.clientX - dragStartX;
+            
+            // Reset the transform
+            card.querySelector('.card-inner').style.transform = '';
+            
+            // Check if the drag was significant enough
+            if (Math.abs(diff) > 50) {
+                // Drag right = inclusive, drag left = non-inclusive
+                checkAnswer(diff > 0);
+            }
+            
+            isDragging = false;
+        }
+
+        // Initialize game when DOM is loaded
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', init);
+        } else {
+            init();
+        }
+    </script>
+
+</body></html>
